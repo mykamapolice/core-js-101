@@ -34,8 +34,8 @@ function parseDataFromRfc2822(/* value */) {
  *    '2016-01-19T16:07:37+00:00'    => Date()
  *    '2016-01-19T08:07:37Z' => Date()
  */
-function parseDataFromIso8601(/* value */) {
-  throw new Error('Not implemented');
+function parseDataFromIso8601(value) {
+  return new Date(value);
 }
 
 
@@ -53,8 +53,9 @@ function parseDataFromIso8601(/* value */) {
  *    Date(2012,1,1)    => true
  *    Date(2015,1,1)    => false
  */
-function isLeapYear(/* date */) {
-  throw new Error('Not implemented');
+function isLeapYear(date) {
+  const year = date.getFullYear();
+  return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
 }
 
 
@@ -73,12 +74,46 @@ function isLeapYear(/* date */) {
  *    Date(2000,1,1,10,0,0),  Date(2000,1,1,10,0,0,250)     => "00:00:00.250"
  *    Date(2000,1,1,10,0,0),  Date(2000,1,1,15,20,10,453)   => "05:20:10.453"
  */
-function timeSpanToString(/* startDate, endDate */) {
-  throw new Error('Not implemented');
+function timeSpanToString(startDate, endDate) {
+  const date = endDate - startDate;
+  const nd = new Date(date);
+  let milliSeconds = nd.getMilliseconds();
+  let seconds = nd.getSeconds();
+  let hours = nd.getUTCHours();
+  let minutes = nd.getMinutes();
+
+  if (milliSeconds > 99) {
+    milliSeconds = `${milliSeconds}`;
+  } else if (milliSeconds > 9) {
+    milliSeconds = `0${milliSeconds}`;
+  } else {
+    milliSeconds = `00${milliSeconds}`;
+  }
+
+  if (seconds > 9) {
+    seconds = `${seconds}`;
+  } else {
+    seconds = `0${seconds}`;
+  }
+
+  if (minutes > 9) {
+    minutes = `${minutes}`;
+  } else {
+    minutes = `0${minutes}`;
+  }
+
+  if (hours > 9) {
+    hours = `${hours}`;
+  } else {
+    hours = `0${hours}`;
+  }
+
+  return `${hours}:${minutes}:${seconds}.${milliSeconds}`;
 }
 
 
 /**
+ *
  * Returns the angle (in radians) between the hands of an analog clock
  * for the specified Greenwich time.
  * If you have problem with solution please read: https://en.wikipedia.org/wiki/Clock_angle_problem
@@ -94,8 +129,18 @@ function timeSpanToString(/* startDate, endDate */) {
  *    Date.UTC(2016,3,5,18, 0) => Math.PI
  *    Date.UTC(2016,3,5,21, 0) => Math.PI/2
  */
-function angleBetweenClockHands(/* date */) {
-  throw new Error('Not implemented');
+function angleBetweenClockHands(date) {
+  const dateNew = new Date(date);
+  let hours = dateNew.getUTCHours();
+  if (hours > 12) {
+    hours -= 12;
+  }
+  const min = dateNew.getMinutes();
+  let an = Math.abs(0.5 * (60 * hours - 11 * min));
+  if (an > 180) {
+    an = 360 - an;
+  }
+  return ((an * Math.PI) / 180);
 }
 
 
